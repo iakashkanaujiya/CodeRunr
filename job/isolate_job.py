@@ -34,7 +34,7 @@ class IsolateJob:
         """Process and then clean the created sandbox environment"""
         self.initialize_workdir()
 
-        if self.compile() == "success":
+        if self.compile():
             self.run()  # Run the code
             self.verify()
         else:
@@ -89,6 +89,10 @@ class IsolateJob:
             f.write(self.submission.stdin)
 
     def compile(self):
+        # If not compile command is present
+        if not self.submission.language.compile_cmd:
+            return True
+
         compile_script = self.boxdir / "compile.sh"
         # Create a tiny runner script to execute the compiler secure parameters
         with open(compile_script, "w") as f:
@@ -128,7 +132,7 @@ class IsolateJob:
         with open(compile_output_file, "r") as f:
             self.submission.compile_output = f.read()
 
-        return "success" if process.returncode == 0 else "failure"
+        return True if process.returncode == 0 else False
 
     def run(self):
         run_script = self.boxdir / "run.sh"

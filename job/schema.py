@@ -26,7 +26,7 @@ class Status(str, Enum):
 
 class SubmissionLanguage(BaseModel):
     source_file: str
-    compile_cmd: str
+    compile_cmd: Optional[str] = None
     run_cmd: str
 
     model_config = {"from_attributes": True}
