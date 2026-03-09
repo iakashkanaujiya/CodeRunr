@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 5f2b50859f60
+Revision ID: ef3b3ee21578
 Revises: 
-Create Date: 2026-03-07 11:57:48.539568
+Create Date: 2026-03-09 14:49:56.196081
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5f2b50859f60'
+revision: str = 'ef3b3ee21578'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,16 +24,20 @@ def upgrade() -> None:
     op.create_table('languages',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('name', sa.String(), nullable=False),
+    sa.Column('version', sa.String(), nullable=True),
     sa.Column('compile_cmd', sa.String(), nullable=True),
     sa.Column('run_cmd', sa.String(), nullable=False),
     sa.Column('source_file', sa.String(), nullable=False),
     sa.Column('is_archived', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('submission_batches',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('token', sa.Uuid(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_submission_batches_token'), 'submission_batches', ['token'], unique=True)
@@ -63,7 +67,8 @@ def upgrade() -> None:
     sa.Column('max_processes_and_or_threads', sa.Integer(), nullable=False),
     sa.Column('enable_per_process_and_thread_time_limit', sa.Boolean(), nullable=True),
     sa.Column('enable_per_process_and_thread_memory_limit', sa.Boolean(), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.Column('finished_at', sa.DateTime(), nullable=True),
     sa.Column('batch_token', sa.Uuid(), nullable=True),
     sa.ForeignKeyConstraint(['batch_token'], ['submission_batches.token'], ),

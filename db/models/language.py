@@ -9,6 +9,7 @@ class Language(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
+    version = Column(String, nullable=True)
     compile_cmd = Column(String, nullable=True)
     run_cmd = Column(String, nullable=False)
     source_file = Column(String, nullable=False)
