@@ -40,7 +40,7 @@ RUN git clone https://github.com/ioi/isolate.git --branch v2.2 /tmp/isolate \
 RUN chmod 4755 /usr/local/bin/isolate
 
 # Isolate configuration
-COPY config/isolate /tmp/isolate.raw
+COPY config/isolate.conf /tmp/isolate.raw
 RUN tr -d '\r' < /tmp/isolate.raw > /usr/local/etc/isolate \
     && sed -i 's/ *= */=/g' /usr/local/etc/isolate \
     && rm /tmp/isolate.raw

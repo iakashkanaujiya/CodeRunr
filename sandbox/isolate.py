@@ -18,14 +18,14 @@ class IsolateCodeSanbox:
 
     def __init__(self, submission: Submission):
         self.submission = submission
-        self.box_id = submission.id
+        self.box_id = submission.id % 999999
 
         # cgroup settings based on submission constraints
         self.cgroups = (
             "--cg"
             if (
-                not submission.enable_per_process_and_thread_time_limit
-                or not submission.enable_per_process_and_thread_memory_limit
+                not submission.limit_per_process_and_thread_time_usages
+                or not submission.limit_per_process_and_thread_memory_usgaes
             )
             else ""
         )
@@ -110,7 +110,7 @@ class IsolateCodeSanbox:
 
         cg_memeory = (
             f"--mem={Config.MAX_MEMORY_LIMIT}"
-            if self.submission.enable_per_process_and_thread_memory_limit
+            if self.submission.limit_per_process_and_thread_memory_usgaes
             else f"--cg-mem={Config.MAX_MEMORY_LIMIT}"
         )
 
@@ -143,12 +143,12 @@ class IsolateCodeSanbox:
 
         cg_memeory = (
             f"--mem={self.submission.memory_limit}"
-            if self.submission.enable_per_process_and_thread_memory_limit
+            if self.submission.limit_per_process_and_thread_memory_usgaes
             else f"--cg-mem={self.submission.memory_limit}"
         )
 
         command = f"""isolate {self.cgroups} {cg_memeory} --silent --box-id={self.box_id} \\
-            --meta={self.metadata_file} --share-net \\
+            --meta={self.metadata_file} \\
             --time={self.submission.cpu_time_limit} --extra-time={self.submission.cpu_extra_time} \\
             --wall-time={self.submission.wall_time_limit} --stack={self.submission.stack_limit} \\
             --processes={self.submission.max_processes_and_or_threads} \\

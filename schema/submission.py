@@ -17,8 +17,8 @@ class SubmissionCreate(BaseModel):
     stack_limit: int = Field(default=65536, ge=2048, le=131072, description="KB")
     max_file_size: int = Field(default=1024, ge=1, le=4096, description="KB")
     max_processes_and_or_threads: int = Field(default=8, ge=1, le=128)
-    enable_per_process_and_thread_time_limit: bool = False
-    enable_per_process_and_thread_memory_limit: bool = False
+    limit_per_process_and_thread_time_usages: bool = False
+    limit_per_process_and_thread_memory_usgaes: bool = False
 
 
 class SubmissionBatchCreate(BaseModel):
@@ -48,8 +48,8 @@ class SubmissionResponse(BaseModel):
     stack_limit: int
     max_file_size: int
     max_processes_and_or_threads: int
-    enable_per_process_and_thread_time_limit: bool
-    enable_per_process_and_thread_memory_limit: bool
+    limit_per_process_and_thread_time_usages: bool
+    limit_per_process_and_thread_memory_usgaes: bool
     created_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
 

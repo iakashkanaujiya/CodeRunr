@@ -54,8 +54,8 @@ def _row_to_response(row: Submission) -> SubmissionResponse:
         stack_limit=row.stack_limit,
         max_file_size=row.max_file_size,
         max_processes_and_or_threads=row.max_processes_and_or_threads,
-        enable_per_process_and_thread_time_limit=row.enable_per_process_and_thread_time_limit,
-        enable_per_process_and_thread_memory_limit=row.enable_per_process_and_thread_memory_limit,
+        limit_per_process_and_thread_time_usages=row.limit_per_process_and_thread_time_usages,
+        limit_per_process_and_thread_memory_usgaes=row.limit_per_process_and_thread_memory_usgaes,
         created_at=row.created_at,
         finished_at=row.finished_at,
     )

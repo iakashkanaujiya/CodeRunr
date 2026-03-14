@@ -57,8 +57,8 @@ class Submission(BaseModel):
     memory_limit: int
     max_file_size: int
     max_processes_and_or_threads: int
-    enable_per_process_and_thread_time_limit: bool
-    enable_per_process_and_thread_memory_limit: bool
+    limit_per_process_and_thread_time_usages: bool
+    limit_per_process_and_thread_memory_usgaes: bool
     created_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None

@@ -68,10 +68,10 @@ class Submission(Base):
     stack_limit: Mapped[int] = mapped_column(default=65536)
     max_file_size: Mapped[int] = mapped_column(default=1024)
     max_processes_and_or_threads: Mapped[int] = mapped_column(default=8)
-    enable_per_process_and_thread_time_limit: Mapped[bool] = mapped_column(
+    limit_per_process_and_thread_time_usages: Mapped[bool] = mapped_column(
         default=False
     )
-    enable_per_process_and_thread_memory_limit: Mapped[bool] = mapped_column(
+    limit_per_process_and_thread_memory_usgaes: Mapped[bool] = mapped_column(
         default=False
     )
 

@@ -26,8 +26,8 @@ async def create_submission(db: AsyncSession, data: SubmissionCreate) -> Submiss
             stack_limit=data.stack_limit,
             max_file_size=data.max_file_size,
             max_processes_and_or_threads=data.max_processes_and_or_threads,
-            enable_per_process_and_thread_time_limit=data.enable_per_process_and_thread_time_limit,
-            enable_per_process_and_thread_memory_limit=data.enable_per_process_and_thread_memory_limit,
+            limit_per_process_and_thread_time_usages=data.limit_per_process_and_thread_time_usages,
+            limit_per_process_and_thread_memory_usgaes=data.limit_per_process_and_thread_memory_usgaes,
         )
         db.add(submission)
         await db.commit()
@@ -120,9 +120,9 @@ async def create_submission_batch(
                 stack_limit=data.stack_limit,
                 max_file_size=data.max_file_size,
                 max_processes_and_or_threads=data.max_processes_and_or_threads,
-                enable_per_process_and_thread_time_limit=data.enable_per_process_and_thread_time_limit,
-                enable_per_process_and_thread_memory_limit=data.enable_per_process_and_thread_memory_limit,
-                batch_token=batch.token,
+                limit_per_process_and_thread_time_usages=data.limit_per_process_and_thread_time_usages,
+                limit_per_process_and_thread_memory_usgaes=data.limit_per_process_and_thread_memory_usgaes,
+                batch_id=batch.id,
             )
             submissions.append(sub)
 
