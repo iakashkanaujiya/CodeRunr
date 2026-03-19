@@ -9,27 +9,32 @@ from db.models.submission_batch import SubmissionBatch
 from schema.submission import SubmissionCreate
 
 
-async def create_submission(db: AsyncSession, data: SubmissionCreate) -> Submission:
+async def create_submission(
+    db: AsyncSession, submission_create: SubmissionCreate
+) -> Submission:
     """
     Create a new submission record into database.
     """
     try:
         submission = Submission(
-            token=data.token,
-            source_code=data.source_code,
-            language_id=data.language_id,
-            stdin=data.stdin,
-            expected_output=data.expected_output,
-            cpu_time_limit=data.cpu_time_limit,
-            cpu_extra_time=data.cpu_extra_time,
-            wall_time_limit=data.wall_time_limit,
-            memory_limit=data.memory_limit,
-            stack_limit=data.stack_limit,
-            max_file_size=data.max_file_size,
-            max_processes_and_or_threads=data.max_processes_and_or_threads,
-            limit_per_process_and_thread_time_usages=data.limit_per_process_and_thread_time_usages,
-            limit_per_process_and_thread_memory_usgaes=data.limit_per_process_and_thread_memory_usgaes,
+            source_code=submission_create.source_code,
+            language_id=submission_create.language_id,
+            stdin=submission_create.stdin,
+            expected_output=submission_create.expected_output,
+            cpu_time_limit=submission_create.cpu_time_limit,
+            cpu_extra_time=submission_create.cpu_extra_time,
+            wall_time_limit=submission_create.wall_time_limit,
+            memory_limit=submission_create.memory_limit,
+            stack_limit=submission_create.stack_limit,
+            max_file_size=submission_create.max_file_size,
+            max_processes_and_or_threads=submission_create.max_processes_and_or_threads,
+            limit_per_process_and_thread_time_usages=submission_create.limit_per_process_and_thread_time_usages,
+            limit_per_process_and_thread_memory_usgaes=submission_create.limit_per_process_and_thread_memory_usgaes,
         )
+
+        if submission_create.token:
+            setattr(submission, "token", submission_create.token)
+
         db.add(submission)
         await db.commit()
         await db.refresh(submission)

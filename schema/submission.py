@@ -1,12 +1,12 @@
 from typing import Optional
 from datetime import datetime
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
 
 class SubmissionCreate(BaseModel):
-    token: UUID = Field(default=uuid4(), description="Submission token (UUID)")
+    token: Optional[UUID] = None
     source_code: str
     language_id: int
     stdin: Optional[str] = None
