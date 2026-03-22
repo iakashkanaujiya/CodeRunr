@@ -1,6 +1,6 @@
 import time
 import asyncio
-from typing import Callable
+from typing import Callable, Awaitable
 from functools import wraps
 
 from loguru import logger
@@ -22,27 +22,24 @@ def sync_error_handler(*, name: str, max_retries: int = 5):
     def decorator(func: Callable):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            last_exception = None
             for i in range(1, max_retries + 1):
                 try:
+                    logger.info(f"Running operation {name} attempt:{i}")
                     return func(*args, **kwargs)
                 except Exception as e:
                     last_exception = e
 
-                    if i <= max_retries:
+                    if i < max_retries:
                         time_to_wait = pow(2, i)
                         logger.error(
-                            f"Operation {name} failed, retrying... after:{time_to_wait}s attempt:{i}"
+                            f"Operation {name} failed, retrying... after:{time_to_wait}s"
                         )
                         time.sleep(time_to_wait)
 
-            if last_exception:
-                logger.error(
-                    f"Operation {name} failed, max retry limit exceed -> Max Retry Limit:{max_retries}"
-                )
-                raise last_exception
-
-            return Exception(f"Operation {name} failed with unknown error")
+            logger.error(
+                f"Operation {name} failed, max retry limit exceed -> Max Retry Limit:{max_retries}"
+            )
+            raise last_exception
 
         return wrapper
 
@@ -62,30 +59,27 @@ def async_error_handler(*, name: str, max_retries: int = 5):
         Exception : In case of any exception
     """
 
-    def decorator(func: Callable):
+    def decorator(func: Callable[..., Awaitable]):
         @wraps(func)
         async def wrapper(*args, **kwargs):
-            last_exception = None
             for i in range(1, max_retries + 1):
                 try:
+                    logger.info(f"Running operation {name} attempt:{i}")
                     return await func(*args, **kwargs)
                 except Exception as e:
                     last_exception = e
 
-                    if i <= max_retries:
+                    if i < max_retries:
                         time_to_wait = pow(2, i)
                         logger.error(
-                            f"Operation {name} failed, retrying... after:{time_to_wait}s attempt:{i}"
+                            f"Operation {name} failed, retrying... after:{time_to_wait}s"
                         )
                         await asyncio.sleep(time_to_wait)
 
-            if last_exception:
-                logger.error(
-                    f"Operation {name} failed, max retry limit exceed -> Max Retry Limit:{max_retries}"
-                )
-                raise last_exception
-
-            return Exception(f"Operation {name} failed with unknown error")
+            logger.error(
+                f"Operation {name} failed, max retry limit exceed -> Max Retry Limit:{max_retries}"
+            )
+            raise last_exception
 
         return wrapper
 

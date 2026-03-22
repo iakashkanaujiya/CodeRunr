@@ -181,9 +181,11 @@ class IsolateCodeSandbox:
         with open(self.metadata_file, "r", encoding="utf-8") as f:
             content = f.read()
 
-        metadata = {
-            data.split(":")[0]: data.split(":")[1] for data in content.splitlines()
-        }
+        metadata = {}
+        for line in content.splitlines():
+            key, _, value = line.partition(":")
+            metadata[key] = value
+
         return metadata
 
     def extract_status(self, status: str, exitsig: int):
@@ -205,7 +207,7 @@ class IsolateCodeSandbox:
                 return SandboxSubmissionStatus.other
         elif status == "RE":
             std_err = self.submission.stderr
-            if re.match(r"RecursionError: maximum recursion depth exceeded", std_err):
+            if re.search(r"RecursionError: maximum recursion depth exceeded", std_err):
                 return SandboxSubmissionStatus.rf
             else:
                 return SandboxSubmissionStatus.nzec
@@ -220,10 +222,10 @@ class IsolateCodeSandbox:
                 return SandboxSubmissionStatus.exeerr
             else:
                 return SandboxSubmissionStatus.boxerr
-        elif (
-            self.submission.expected_output
-            and self.submission.stdout == self.submission.expected_output
-        ):
+        elif not self.submission.expected_output:
+            # No expected output to compare — treat as accepted
+            return SandboxSubmissionStatus.acc
+        elif self.submission.stdout == self.submission.expected_output:
             return SandboxSubmissionStatus.acc
         else:
             return SandboxSubmissionStatus.wans

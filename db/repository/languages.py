@@ -18,6 +18,7 @@ async def create_language(db: AsyncSession, data: LanguageCreate) -> Language:
     """
     language = Language(
         name=data.name,
+        version=data.version,
         compile_cmd=data.compile_cmd,
         run_cmd=data.run_cmd,
         source_file=data.source_file,
