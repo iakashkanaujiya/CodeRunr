@@ -1,5 +1,5 @@
 from celery import Celery
-from celery.signals import worker_process_init
+from celery.signals import setup_logging, worker_process_init
 
 from config import settings, configure_logger
 
@@ -20,6 +20,16 @@ app = Celery(
     timezone="Asia/Kolkata",
     enable_utc=True,
 )
+
+app.conf.update(
+    worker_hijack_root_logger=False,
+    worker_redirect_stdouts=False,
+)
+
+
+@setup_logging.connect
+def setup_celery_logging(**_: object) -> None:
+    configure_logger()
 
 
 @worker_process_init.connect

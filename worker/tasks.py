@@ -1,20 +1,19 @@
-import logging
-from uuid import UUID
 from datetime import datetime, timezone
+from uuid import UUID
 
+from loguru import logger
+
+from db.repository.sync_queries import get_language_sync, get_submission_by_token_sync
 from db.session import SyncSessionLocal
-from db.repository.sync_queries import get_submission_by_token_sync, get_language_sync
+from exceptions.error_handler import sync_error_handler
+from sandbox.isolate import IsolateCodeSandbox
 from sandbox.schema import (
     SandboxSubmission,
     SandboxSubmissionLanguage,
     SandboxSubmissionStatus,
 )
-from sandbox.isolate import IsolateCodeSandbox
 from utils.http_util import get_sync_http
-from exceptions.error_handler import sync_error_handler
 from worker.celery import app
-
-logger = logging.getLogger(__name__)
 
 
 @sync_error_handler(name="post_data_on_callback")
@@ -40,7 +39,7 @@ def submit_submission_task(submission_token: str) -> str:
             submission_record = get_submission_by_token_sync(db, token)
 
             if submission_record is None:
-                logger.error("Submission %s not found", token)
+                logger.error("Submission {} not found", token)
                 return
 
             language = get_language_sync(db, submission_record.language_id)
@@ -102,16 +101,18 @@ def submit_submission_task(submission_token: str) -> str:
                     )
                 except Exception:
                     logger.exception(
-                        "Failed to deliver callback for submission %s to %s",
+                        "Failed to deliver callback for submission {} to {}",
                         token,
                         submission_record.webhook_url,
                     )
 
-            logger.info("Submission %s processed → %s", token, submission_record.status)
+            logger.info(
+                "Submission {} processed -> {}", token, submission_record.status
+            )
             return f"Submission successful {token}"
 
-    except Exception:
-        logger.exception("Failed to process submission %s", token)
+    except Exception as e:
+        logger.exception(e.__repr__())
         # Mark as internal error using a fresh session
         try:
             with SyncSessionLocal() as db:
@@ -121,6 +122,6 @@ def submit_submission_task(submission_token: str) -> str:
                     err_submission_record.message = "Internal worker error"
                     db.commit()
         except Exception:
-            logger.exception("Failed to mark submission %s as errored", token)
+            logger.exception("Failed to mark submission {} as errored", token)
 
         return f"Submission failed {token}"
